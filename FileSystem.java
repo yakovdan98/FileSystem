@@ -40,7 +40,13 @@ public class FileSystem {
 
     public boolean format(int files)
     {
-        return false;
+        superblock.format(files);
+
+        directory = new Directory(superblock.inodeBlocks);
+
+        fileTable = new FileTable(directory);
+
+        return true;
     }
 
     public FileTableEntry open(String filename, String mode)
@@ -87,7 +93,47 @@ public class FileSystem {
 
     int read(FileTableEntry ftEnt, byte[] buffer)
     {
-        return 0;
+        int dataRead = 0;
+        int totalSize = buffer.length;
+        int dataSize = 0;
+
+    synchronized (ftEnt) {
+
+        if (ftEnt.mode.equals("r") || ftEnt.mode.equals("w+")) {
+            int readSize = buffer.length;
+
+            while (ftEnt.seekPtr < fsize(ftEnt)) {
+                int block = ftEnt.inode.findTargetBlock(ftEnt.seekPtr);
+
+                if(block == -1) { break;}
+
+                byte blockData[] = new byte[512];
+                SysLib.rawread(block, blockData);
+
+                int blockOffset = ftEnt.seekPtr % 512;
+
+                if(dataSize > totalSize){
+                    dataSize = totalSize;
+                }
+                else if(512 - blockOffset < fsize(ftEnt) - ftEnt.seekPtr){
+                    dataSize = 512 - dataSize;
+                }
+                else{
+                    dataSize = fsize(ftEnt) - ftEnt.seekPtr;
+                }
+
+                System.arraycopy(blockData, blockOffset, buffer, dataRead, dataSize);
+                ftEnt.seekPtr += dataSize;
+                totalSize -= dataSize;
+                dataRead += dataSize;
+
+
+            }
+            return dataRead;
+        }
+
+            return -1;
+        }
     }
 
     int write(FileTableEntry ftEnt, byte[] buffer)
@@ -102,7 +148,7 @@ public class FileSystem {
             int seekPtr;
             if(ftEnt.mode.equals("a"))
             {
-               seekPtr = seek(ftEnt, 0, SEEK_END);
+                seekPtr = seek(ftEnt, 0, SEEK_END);
             } else {
                 seekPtr = ftEnt.seekPtr;
             }
