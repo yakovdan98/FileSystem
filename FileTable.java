@@ -1,3 +1,4 @@
+import java.util.IdentityHashMap;
 import java.util.Vector;
 
 public class FileTable {
@@ -60,13 +61,24 @@ public class FileTable {
     public synchronized boolean ffree( FileTableEntry e ) {
         // receive a file table entry reference
         // save the corresponding inode to the disk
-        e.inode.toDisk(e.iNumber);
+        Inode inode = new Inode(e.iNumber);
         // free this file table entry.
         // return true if this file table entry found in my table
 
         if(table.remove(e)) {
-            e.inode.count--;
+            if(inode.flag == 3){//read
+                if(inode.count == 1){
+                    inode.flag = 1; //used
+                }
+            }
+            else if(inode.flag == 4){ //write
+                inode.flag = 1;//used
+            }
+            inode.count--;
+
+            inode.toDisk(e.iNumber);
             return true;
+
         }
         return false;
     }
