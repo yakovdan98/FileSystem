@@ -68,11 +68,6 @@ public class Inode {
         return blockNumber;
     }
 
-    public short getIndexBlockNumber()
-    {
-        return this.indirect;
-    }
-
     public boolean setIndexBlock(short indexBlockNumber)
     {
         for(int i = 0; i < 11; i++)
