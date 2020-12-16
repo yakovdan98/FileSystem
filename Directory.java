@@ -89,9 +89,14 @@ public class Directory {
     }
 
     public boolean ifree(short iNumber) {
-        // deallocates this inumber (inode number)
+       // deallocates this inumber (inode number)
         // the corresponding file will be deleted.
         fsize[iNumber] = 0;
+        for(int i = 0; i < maxChars; i++)
+        {
+            fnames[iNumber][i] = '0';
+        }
+
         return true;
     }
 
