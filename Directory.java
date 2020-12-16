@@ -1,4 +1,7 @@
-import java.util.Arrays;
+/*
+ * This class represents the Directory of the file system. This implementation is a single-level design and consists
+ * of the "/" root directory.  This is the only directory for the file system.
+ */
 
 public class Directory {
     private static int maxChars = 30; // max characters of each file name
@@ -89,7 +92,7 @@ public class Directory {
     }
 
     public boolean ifree(short iNumber) {
-       // deallocates this inumber (inode number)
+        // deallocates this inumber (inode number)
         // the corresponding file will be deleted.
         fsize[iNumber] = 0;
         for(int i = 0; i < maxChars; i++)
