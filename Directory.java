@@ -1,6 +1,7 @@
 import java.util.Arrays;
 
 /**
+ *  Andrew Montgomery, Daniel Yakovlev
  *  Directory class that holds the different file names that are stored on the disk and the inode number for them
  */
 
