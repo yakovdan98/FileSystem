@@ -51,12 +51,14 @@ public class FileSystem {
      */
     public boolean format(int files)
     {
-        superblock.format(files);
-        // Create a new instance of Directory and FileTable
-        directory = new Directory(superblock.inodeBlocks);
-        fileTable = new FileTable(directory);
-        return true;
+        while(this.fileTable.fempty() == false) {
+        }
 
+            superblock.format(files);
+            // Create a new instance of Directory and FileTable
+            directory = new Directory(superblock.inodeBlocks);
+            fileTable = new FileTable(directory);
+            return true;
     }
 
     /*
@@ -70,7 +72,14 @@ public class FileSystem {
     {
         //Create and allocate new file table entry using filename and mode
         //from function parameters
-        return fileTable.falloc(filename, mode);
+        FileTableEntry ftEnt = fileTable.falloc(filename, mode);
+
+        if(mode.equals("w"))
+        {
+            if(deallocAllBlocks(ftEnt) == false)
+                return null;
+        }
+        return ftEnt;
     }
 
     /*
@@ -337,5 +346,37 @@ public class FileSystem {
             }
         }
         return ftEnt.seekPtr;
+    }
+
+    private boolean deallocAllBlocks(FileTableEntry ftEnt) {
+
+        // Checks that the parameters are valid
+        if (ftEnt == null)
+            return false;
+        Inode node = ftEnt.inode;
+        if (node == null || node.count > 1)
+            return false;
+
+        // Free the direct blocks if there was data in the blocks, and return them to the free block list
+        for (int i = 0; i < 11; i++) {
+            short directNode = ftEnt.inode.direct[i];
+            if (directNode != -1) {
+                superblock.returnBlock(directNode);
+            }
+            ftEnt.inode.direct[i] = -1;
+        }
+
+        // Free the indirect block if it is being used, and return the block to the free block list
+        if (ftEnt.inode.indirect != -1) {
+            superblock.returnBlock(ftEnt.inode.indirect);
+        }
+
+        // Reset the variables of the inode to indicate that the inode is no longer being used and write
+        // the inode to the disk
+        ftEnt.inode.length = 0;
+        ftEnt.inode.count = 0;
+        ftEnt.inode.flag = 0;
+        ftEnt.inode.toDisk(ftEnt.iNumber);
+        return true;
     }
 }
