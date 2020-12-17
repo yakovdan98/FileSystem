@@ -2,6 +2,7 @@ import java.util.IdentityHashMap;
 import java.util.Vector;
 
 /**
+ * Andrew Montgomery, Daniel Yakovlev
  * File Table class is a container for a list of currently open files. This object will store opened files
  * on a vector and remove them once they are closed.
  */
