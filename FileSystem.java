@@ -69,15 +69,7 @@ public class FileSystem {
     {
         //Create and allocate new file table entry using filename and mode
         //from function parameters
-        FileTableEntry ftEnt = fileTable.falloc(filename, mode);
-
-        //If file table entry is in write mode, deallocate all the blocks
-        if(mode.equals("w"))
-        {
-            if(deallocAllBlocks(ftEnt) == false)
-                return null;
-        }
-        return ftEnt;
+        return fileTable.falloc(filename, mode);
     }
 
     /*
@@ -110,7 +102,7 @@ public class FileSystem {
      * @Param ftEnt: The entry in the FileTable for the file
      * @Return int: The size of the file from the parameter
      */
-    int fsize(FileTableEntry ftEnt)
+    public int fsize(FileTableEntry ftEnt)
     {
         if(ftEnt == null)
         {
@@ -129,7 +121,7 @@ public class FileSystem {
      * @Param buffer: The data of the file being read
      * @Return int: The total size that was read from the file
      */
-    int read(FileTableEntry ftEnt, byte[] buffer)
+    public int read(FileTableEntry ftEnt, byte[] buffer)
     {
         int dataRead = 0;
         int totalSize = buffer.length;
@@ -278,7 +270,7 @@ public class FileSystem {
      * @Param filename: The name of the file to be deleted
      * @Return boolean: Returns true if the file was deleted, otherwise false
      */
-    boolean delete(String filename)
+    public boolean delete(String filename)
     {
         FileTableEntry ftEnt = open(filename, "w");
         return close(ftEnt) && directory.ifree(ftEnt.iNumber);
@@ -291,7 +283,7 @@ public class FileSystem {
      * @Param whence: The location of where to offset the seek pointer from (start, current position, or end)
      * @Return int: The location of the seek pointer in the ftEnt
      */
-    int seek(FileTableEntry ftEnt, int offset, int whence)
+    public int seek(FileTableEntry ftEnt, int offset, int whence)
     {
         synchronized (ftEnt)
         {
@@ -344,46 +336,5 @@ public class FileSystem {
             }
         }
         return ftEnt.seekPtr;
-    }
-
-    /*
-     * Method that is used to deallocate all blocks associated with the FileTableEntry from the parameter
-     * @Param ftEnt: The entry in the FileTable for the file
-     * @Return boolean: Returns true if the blocks were successfully deallocated, otherwise false
-     */
-    private boolean deallocAllBlocks(FileTableEntry ftEnt)
-    {
-        // Checks that the parameters are valid
-        if(ftEnt == null)
-            return false;
-        Inode node = ftEnt.inode;
-        if(node == null || node.count > 1)
-            return false;
-
-        // Free the index blocks
-        byte[] blockData = ftEnt.inode.removeIndexBlock();
-
-        // If there was data in the index blocks, set them to not in use and return them to the free block list
-        if(blockData != null)
-        {
-            short indirectNode;
-            while((indirectNode = SysLib.bytes2short(blockData, 0)) != -1)
-            {
-                this.superblock.returnBlock(indirectNode);
-            }
-        }
-
-        // Free the direct blocks if there was data in the blocks, and return them to the free block list
-        for(int i = 0; i < 11; i++)
-        {
-            short directNode = ftEnt.inode.direct[i];
-            if(directNode != -1)
-            {
-                superblock.returnBlock(directNode);
-            }
-        }
-
-        ftEnt.inode.toDisk(ftEnt.iNumber);
-        return true;
     }
 }
