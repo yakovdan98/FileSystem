@@ -1,4 +1,5 @@
 /*
+ * Andrew Montgomery, Daniel Yakovlev
  * This is the same file as Kernel_org.java
  */
 import java.io.BufferedReader;
