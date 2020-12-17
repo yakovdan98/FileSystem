@@ -1,4 +1,5 @@
 /*
+ * Andrew Montgomery, Daniel Yakovlev
  * Class that represents the superblock of the file system.  The superblock is the first disk block and is
  * used to hold the number of disk blocks, the number of inodes, and the block number of the head of the free list in
  * the system.
