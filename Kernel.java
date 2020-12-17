@@ -143,7 +143,7 @@ public class Kernel
                         // and then went back to sleep
 
                         return OK;
-                    case SYNC:     // synchronize disk data to a real file
+                    case  SYNC:     // synchronize disk data to a real file
                         while ( disk.sync( ) == false )
                             ioQueue.enqueueAndSleep( COND_DISK_REQ );
                         while ( disk.testAndResetReady( ) == false )
@@ -206,7 +206,7 @@ public class Kernel
                                 myTcb = scheduler.getMyTcb();
                                 if(myTcb != null)
                                 {
-                                    FileTableEntry ftEnt =myTcb.getFtEnt(param);
+                                    FileTableEntry ftEnt = myTcb.getFtEnt(param);
                                     if(ftEnt != null)
                                     {
                                         // return FileSystem.write( param, byte args[] );
