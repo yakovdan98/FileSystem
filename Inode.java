@@ -1,5 +1,6 @@
 /*
  * Andrew Montgomery, Daniel Yakovlev
+ * 
  * The Inode class is a simplified version of the Linux inode.  Each inode represents a file system
  * object (i.e. a file) and stores the attributes (length of the file, count of file table entries
  * using the file, flag of whether it is being used or not) of the file. Each Inode also has 11 direct
@@ -164,10 +165,8 @@ public class Inode {
 
         if(targetBlock < 11)                                    // Target block is in direct access
         {
-            if(this.direct[targetBlock] >= 0)                   // Target block is already in use
-            {
-                return -1;
-            } else if(targetBlock > 0 && this.direct[targetBlock - 1] == -1)        // The direct block before the target
+
+            if(targetBlock > 0 && this.direct[targetBlock - 1] == -1)        // The direct block before the target
             {                                                                       // is not in use (should use this
                 return -2;                                                          // instead)
             } else {                                            // Direct block is not being used, so use it
@@ -189,23 +188,6 @@ public class Inode {
                 SysLib.rawwrite(this.indirect, blockData);
                 return 0;
             }
-        }
-    }
-
-    /*
-     * Method that frees the indirect blocks
-     * @Return byte[]: The data from the block that has being freed
-     */
-    public byte[] removeIndexBlock()
-    {
-        if(this.indirect >= 0)                          // If the block is in used, read the contents into the byte[]
-        {                                               // array, set the indirect block to -1 (not in use) and return
-            byte[] block = new byte[Disk.blockSize];    // the data
-            SysLib.rawread(this.indirect, block);
-            this.indirect = -1;
-            return block;
-        } else {
-            return null;
         }
     }
 }
