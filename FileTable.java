@@ -57,7 +57,8 @@ public class FileTable {
                 break;
 
             }
-            return null;//unrecognizable command
+            if(iNumber < 0 && mode.equals("r"))
+                return null;
 
         }
         // increment this inode's count
