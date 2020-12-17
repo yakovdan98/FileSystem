@@ -65,7 +65,7 @@ public class Inode {
      * @param iNumber: The unique identifier for the Inode that is being saved to disk
      * @return blockNumber: The block number that the Inode is saved to
      */
-    int toDisk(short iNumber)
+    public int toDisk(short iNumber)
     {
         int blockNumber = (iNumber / 16) + 1;                       // location of inode in memory
         byte[] node = new byte[iNodeSize];                          // holds data from the inode
@@ -90,7 +90,6 @@ public class Inode {
         System.arraycopy(node, 0, block, offset, iNodeSize);    // Copy the node data into the block
         SysLib.rawwrite(blockNumber, block);                          // Write over original block with updated block
         return blockNumber;
-
     }
 
     /*
@@ -194,7 +193,7 @@ public class Inode {
 
     /*
      * Method that frees the indirect blocks
-     * @Return byte[]: The data from the block that has beed freed
+     * @Return byte[]: The data from the block that has being freed
      */
     public byte[] removeIndexBlock()
     {
