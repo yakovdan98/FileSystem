@@ -1,7 +1,11 @@
+/*
+ * Andrew Montgomery, Daniel Yakovlev
+ */
+
 public class FileTableEntry {           // Each table entry should have
     public int seekPtr;                 // a file seek pointer
     public final Inode inode;           // a reference to its inode
-    public final short iNumber;         // this inode number
+    public final short iNumber;         // the inode number
     public int count;                   // # threads sharing this entry
     public final String mode;           // "r", "w", "w+", or "a"
 
