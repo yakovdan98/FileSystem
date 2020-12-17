@@ -1,4 +1,5 @@
 /*
+ * Andrew Montgomery, Daniel Yakovlev
  * The Inode class is a simplified version of the Linux inode.  Each inode represents a file system
  * object (i.e. a file) and stores the attributes (length of the file, count of file table entries
  * using the file, flag of whether it is being used or not) of the file. Each Inode also has 11 direct
